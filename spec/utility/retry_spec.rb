@@ -31,8 +31,8 @@ describe "Command Retry Script" do
     expect(status.exitstatus).to eq(124) # test based on the fact that timeout has a specific exitstatus
   end
 
-  describe "naptime option" do
-    context "no naptime option passed" do
+  describe "sleep option" do
+    context "no sleep option passed" do
       it "doesn't nap" do
         started = Time.now
         Open3.capture3("utility/retry false")
@@ -42,10 +42,10 @@ describe "Command Retry Script" do
       end
     end
 
-    context "naptime option passed" do
+    context "sleep option passed" do
       it "naps for the passed seconds between execution" do
         started = Time.now
-        Open3.capture3("utility/retry --naptime 0.5 --times 4 false")
+        Open3.capture3("utility/retry --sleep 0.5 --times 4 false")
         finished = Time.now
 
         expect(finished - started).to be > 1
