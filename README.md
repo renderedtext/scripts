@@ -2,6 +2,28 @@
 
 Utility scripts for running builds on Semaphore.
 
+### Retry
+
+```
+Retries a command several times.
+
+Options:
+  -t, --times  - Number of times to retry the command (default: 3)
+  -s, --sleep  - Number of seconds to sleep between retries (default: 0)
+```
+
+Examples:
+
+``` bash
+retry bundle install                       # retries the command 3 times
+retry --times 10 bundle install            # retries the command 10 times
+retry --t 5 bundle install                 # retries the command 5 times
+retry --times 10 --sleep 2 bundle install  # retries the command 10 times with 2 second sleep in between
+
+# complex commands
+retry --times 5 'for i in ${1..10}; { echo "Hello World: $i" }'
+```
+
 ## License
 
 Copyright (c) 2017 Rendered Text
