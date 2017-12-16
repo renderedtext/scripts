@@ -56,6 +56,22 @@ describe "Command Retry Script" do
   end
 
   describe "times option" do
+    it "reties the passed number of times" do
+      stdout, stderr, status = Open3.capture3("utility/retry --times 7 false")
+
+      msg = [
+        "[1/7] Execution Failed with exit status 1. Retrying.",
+        "[2/7] Execution Failed with exit status 1. Retrying.",
+        "[3/7] Execution Failed with exit status 1. Retrying.",
+        "[4/7] Execution Failed with exit status 1. Retrying.",
+        "[5/7] Execution Failed with exit status 1. Retrying.",
+        "[6/7] Execution Failed with exit status 1. Retrying.",
+        "[7/7] Execution Failed with exit status 1. No more retries.",
+        ""
+      ].join("\n")
+
+      expect(stdout).to eq(msg)
+    end
   end
 
   context "when the command contains complex bash logic" do
