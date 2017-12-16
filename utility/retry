@@ -10,33 +10,47 @@
 # Beware of set -e killing your whole script!
 
 function retry_execution {
-  local max_attempts=${ATTEMPTS-5}
-  local timeout=${TIMEOUT-1}
-  local attempt=0
-  local exitCode=0
+  local n=3;       # retry 3 times by default
+  local naptime=0; # don't sleep by default
 
-  while [[ $attempt < $max_attempts ]]
-  do
-    "$@"
-    exitCode=$?
+  # parsing command line options
 
-    if [[ $exitCode == 0 ]]
-    then
-      break
-    fi
+  while true; do
+    case "$1" in
 
-    echo "Failure! Retrying in $timeout.." 1>&2
-    sleep $timeout
-    attempt=$(( attempt + 1 ))
-    timeout=$(( timeout * 2 ))
+      -t|--times)
+        shift   # drop --times from the args
+        n="$1"  # $1 contains the number of iterations
+        shift
+        ;;
+
+      -n|--naptime)
+        shift   # drop --naptime from the args
+        n="$1"  # $1 contains the naptime
+        shift
+        ;;
+
+      *)
+        break;  # no more args to parse
+
+    esac
   done
 
-  if [[ $exitCode != 0 ]]
-  then
-    echo "You've failed me for the last time! ($@)" 1>&2
-  fi
+  # executing command
 
-  return $exitCode
+  local cmd="$@";
+
+  for i in $(seq 1 $n); do
+    eval "$cmd";
+
+    if [[ $? == 0 ]]; then
+      exit 0; # command executed succesfully
+    else
+      echo "Execution Failed with exit status $?. Retrying [$i/$n]." >&2
+    fi
+  done
+
+  exit $?; # exit with the same exit status as the invoked command
 }
 
 retry_execution $@
