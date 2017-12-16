@@ -24,6 +24,14 @@ retry --times 10 --sleep 2 bundle install  # retries the command 10 times with 2
 retry --times 5 'for i in ${1..10}; { echo "Hello World: $i" }'
 ```
 
+Installation:
+
+``` bash
+curl -L https://raw.githubusercontent.com/renderedtext/scripts/master/utility/retry > /tmp/retry
+chmod +x /tmp/retry
+mv /tmp/retry /usr/bin/retry
+```
+
 ## License
 
 Copyright (c) 2017 Rendered Text
