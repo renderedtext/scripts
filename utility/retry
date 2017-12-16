@@ -26,7 +26,7 @@ function retry_execution {
 
       -n|--naptime)
         shift   # drop --naptime from the args
-        __n__="$1"  # $1 contains the naptime
+        __naptime__="$1"  # $1 contains the naptime
         shift
         ;;
 
@@ -57,6 +57,7 @@ function retry_execution {
         exit $__result__; # exit with the same exit status as the invoked command
       else
         echo "[$__i__/$__n__] Execution Failed with exit status $__result__. Retrying."
+        sleep $__naptime__;
       fi
     fi
   done
