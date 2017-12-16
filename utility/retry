@@ -10,8 +10,8 @@
 # Beware of set -e killing your whole script!
 
 function retry_execution {
-  local n=3;       # retry 3 times by default
-  local naptime=0; # don't sleep by default
+  local __n__=3;       # retry 3 times by default
+  local __naptime__=0; # don't sleep by default
 
   # parsing command line options
 
@@ -20,13 +20,13 @@ function retry_execution {
 
       -t|--times)
         shift   # drop --times from the args
-        n="$1"  # $1 contains the number of iterations
+        __n__="$1"  # $1 contains the number of iterations
         shift
         ;;
 
       -n|--naptime)
         shift   # drop --naptime from the args
-        n="$1"  # $1 contains the naptime
+        __n__="$1"  # $1 contains the naptime
         shift
         ;;
 
@@ -36,21 +36,30 @@ function retry_execution {
     esac
   done
 
+
   # executing command
 
-  local cmd="$@";
+  local __cmd__="$@";
+  local __result__="0";
 
-  for i in $(seq 1 $n); do
-    eval "$cmd";
+  for __i__ in $(seq 1 $__n__); do
+    eval "$__cmd__";
 
-    if [[ $? == 0 ]]; then
+    __result__="$?";
+    # echo "$__result__";
+
+    if [ $__result__ -eq "0" ]; then
       exit 0; # command executed succesfully
     else
-      echo "Execution Failed with exit status $?. Retrying [$i/$n]." >&2
+      if [[ $__i__ == $__n__ ]]; then
+        echo "[$__i__/$__n__] Execution Failed with exit status $__result__. No more retries."
+
+        exit $__result__; # exit with the same exit status as the invoked command
+      else
+        echo "[$__i__/$__n__] Execution Failed with exit status $__result__. Retrying."
+      fi
     fi
   done
-
-  exit $?; # exit with the same exit status as the invoked command
 }
 
 retry_execution $@
